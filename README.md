@@ -1,5 +1,6 @@
-# Dessert Shop:
-A public repo for the dessert shop bot
+![Header](https://lh6.googleusercontent.com/96jkad2RHo0arMCuXb78bDvOFm23EYn8XZN0Ve0PcK9GSp4w9z1eE6rS7yJ2yWjPya0dkHvpdA=w1200)
+
+# Dessert Shop Bot
 
 # Commands:
 
