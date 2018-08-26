@@ -2,6 +2,8 @@
 
 # Dessert Shop Bot
 
+![discordbots.org](https://discordbots.org/api/widget/478729456454729728.png)
+
 ## Page links:
 Chef Guides: <link>
 Server owner guides: <link>
