@@ -29,10 +29,14 @@ Do this using @Dessert Shop note [message]
 Occasionally you'll need to add a peice of text or another image ontop of something.
 For an in depth tutorial on editing images, check out this guide: https://blog.hubspot.com/marketing/how-to-use-photoshop
 
+### Uploading an image:
+Once you've created your order, go to https://kuv.io and click the upload button, Then select the image you'd like to upload.
+Copy the image url (in the top bar) and paste in on the next step.
+
+![screenshot](https://kuuv.io/i/b6f6e2b.PNG)
+
 ### Submitting an image
 Once you've finished editing the image (if needed) You may then submit the image
 This can be done using @Dessert Shop img [image link]
-
-*(Your image must be either a https://kuuv.io link or a https://imgur.com link.)*
 
 ![screenshot](https://kuuv.io/i/8ce42b1.PNG)
