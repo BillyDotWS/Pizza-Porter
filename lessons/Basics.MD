@@ -33,4 +33,6 @@ For an in depth tutorial on editing images, check out this guide: https://blog.h
 Once you've finished editing the image (if needed) You may then submit the image
 This can be done using @Dessert Shop img [image link]
 
+*(Your image must be either a https://kuuv.io link or a https://imgur.com link.)*
+
 ![screenshot](https://kuuv.io/i/8ce42b1.PNG)
