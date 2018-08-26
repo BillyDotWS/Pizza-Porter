@@ -2,7 +2,12 @@
 
 # Dessert Shop Bot
 
-# Commands:
+## Page links:
+Chef Guides: <link>
+Server owner guides: <link>
+Known issues: <link>
+
+## Commands:
 
 ### @Dessert Shop order (order information)
 
