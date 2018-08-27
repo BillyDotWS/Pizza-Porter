@@ -1,1 +1,2 @@
-
+on script load:
+	login to "" using the name "Dessert"
