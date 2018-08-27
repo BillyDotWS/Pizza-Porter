@@ -27,3 +27,32 @@ on guild message receive seen by "Dessert":
 		
 
 		
+member join guild seen by "Dessert":
+	if id of event-guild is "478780582642450448":
+
+		if {role.%id of event-user%} is "owner":
+			add role with id "479350036359020544" to roles of event-user in event-guild with event-bot
+			send ":arrow_right: <@%id of event-user%> **[Server Owner]** has joined the discord" to channel with id "478780582642450450" with event-bot
+			wait 1 second
+			add role with id "478782318421737472" to roles of event-user in event-guild with event-bot
+			stop
+		if {userinfo.blocked.%id of event-user%} is "true":
+			add role with id "479350036359020544" to roles of event-user in event-guild with event-bot
+			wait 2 seconds
+			send ":arrow_right: <@%id of event-user%> **[Blacklisted]** has joined the discord" to channel with id "478780582642450450" with event-bot
+			stop
+		if {customers::*} contains "%event-user%":
+			add role with id "478782318421737472" to roles of event-user in event-guild with event-bot
+			send ":arrow_right: <@%id of event-user%> **(%id of event-user%)** has joined the discord" to channel with id "478780582642450450" with event-bot
+			stop
+		else:
+			send ":arrow_right: <@%id of event-user%> **(%id of event-user%)** has joined the discord" to channel with id "478780582642450450" with event-bot
+			send "Welcome <@%id of event-user%> to the **Dessert Shop demo server!** For a full list of commands, mention <@478729456454729728>" to channel with id "479379372030164992" with event-bot
+			stop
+	else:
+		set {balance::%event-guild%::%id of event-user%} to 20
+		
+member leave guild seen by "Dessert":
+	if id of event-guild is "478780582642450448":
+		send ":arrow_left: <@%id of event-user%> **(%id of event-user%)** has left the discord" to channel with id "478780582642450450" with event-bot
+		stop
