@@ -7,6 +7,9 @@ When someone creates an order, it'll be displayed in the #orders channel.
 
 Along with the order information, information on The requester and guild is also shown.
 
+### Order rules
+![rules](https://kuuv.io/i/39a7ff2.png)
+
 ### How to claim an order
 In order to claim an order, click the tick.
 Please ensure it doesn't break our rules as completing a rule breaking order isn't allowed.
