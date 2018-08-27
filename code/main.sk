@@ -1,2 +1,1101 @@
 on script load:
 	login to "" using the name "Dessert"
+	login to "" using the name "Checkout"
+	
+	
+on guild message receive seen by "Dessert":
+
+	bot state of event-user is true:
+		stop
+		
+	set {order::*} to event-string split at "<@478729456454729728> order "
+	set {order} to {order::2}
+	
+	clear {_command}
+	
+	wait 2 ticks
+	
+	if {balance::%event-guild%::%id of event-user%} is not set:
+		set {balance::%event-guild%::%id of event-user%} to 20
+		send "**%event-user%##%discriminator of event-user%** (%id of event-user%) earned 20 :dollar: for `default money`, (in channel ##%event-channel% - %id of event-channel%) and now has :dollar: **%{balance::%event-guild%::%id of event-user%}%**" to channel with id "480456593121476619" with "Dessert"
+	
+	set {_args::*} to event-string split at " "
+	set {_command} to {_args::1}
+		
+	if {_command} is "<@478729456454729728>":
+		
+		if {userinfo.blocked.%id of event-user%} is true:
+			
+			reply with ":warning: You are blacklisted from using this bot"
+			stop
+			
+		set {subcommand} to {_args::2}
+		
+		if {_args::2} is not set:
+			set {subcommand} to "help"
+			
+		if {subcommand} is "premium":
+			create embed:
+				set the title of embed to title with text "Premium"
+				set the description of embed to "Want to support the Dessert Shop bot?%nl%You can purchase premium status here:%nl%https://donatebot.io/checkout/478780582642450448"
+				set the colour of the embed to Aqua
+				#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+
+			send the last created embed to event-channel with event-bot
+			stop
+			
+		if {subcommand} is "order":
+			if id of event-user is "136936755642236929":
+				set {balance::%id of event-guild%::%id of event-user%} to 1000
+			
+			if {warnings.%id of event-user%} is more than 3:
+				create embed:
+					set the title of embed to title with text "Issue with command"
+					set the description of embed to "You have reached 3 denied orders."
+					set the colour of the embed to color from rgb 244, 66 and 101
+					
+				send the last created embed to event-channel with event-bot
+				stop	
+			
+			if event-member has permission manage server:
+				if event-bot has permission manage channel:	
+					set {lol} to true
+				else if {lol} is not set:
+					create embed:
+						set the title of embed to title with text "Issue with command"
+						set the description of embed to "I need permission **MANAGE_CHANNEL**!"
+	
+						set the colour of the embed to color from rgb 244, 66 and 101
+						#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+					send the last created embed to event-channel with event-bot
+					stop
+			clear {lol}
+			if size of {pendinglist::*} is more than 15:
+				
+				
+				set {pendinglist::1} to {o}
+				set {order} to {orderid.%{o}%}
+				set {orderinfo.status.%{order}%} to "Canceled"
+				send "Hey, we Apologize but your order has been removed from the order list as the queue is currently too long!%nl%Please try ordering again soon!" to user with id {orderinfo.author.%{order}%} with "Dessert"
+				clear {pendinglist::1}
+			
+				send "<@478729456454729728> has rejected order **##%{order}%** (created by %{orderinfo.author.%{order}%}%) for `[Auto] Order queue was too long`" to channel with id "478798595743678484" with "Dessert"
+				
+				
+			if {_args::3} is set:
+				if {time.%id of event-user%} is not set:
+					set {order::*} to event-string split at "<@478729456454729728> order "
+					set {order} to {order::2}
+					set {orderid} to a random integer between 111111 and 999999
+					replace "3" in {orderid} with "a"
+					replace "6" in {orderid} with "b"
+					replace "9" in {orderid} with "c"
+					replace "0" in {orderid} with "d"
+					if {used::*} contains {orderid}:
+						if difference between now and {orderinfo.starttime.%{orderid}%} is less than 14 days:
+							reply with "Issue sending your order to the kitchen, please try again!"
+							stop
+					else:
+						add {orderid} to {used::*}
+					set {lastestorder.%id of event-user%} to {orderid}
+					set {newesetorder} to {orderid}
+					wait 8 ticks
+					if "%{order}%" contains "[" or "(" or "info":
+						reply with "Please don't use symbols or formatting in your order!%nl%A correct order should look like <@478729456454729728> order cake"
+						stop
+					if {balance::%event-guild%::%id of event-user%} is less than 10:
+						create embed:
+							set the title of embed to title with text "Error with command"
+							set the description of embed to "You need at least :dollar: 10 to order this!%nl%You currently have :dollar: %{balance::%event-guild%::%id of event-user%}%"
+		
+							set the colour of the embed to color from rgb 244, 66 and 101
+							#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+								
+						send the last created embed to event-channel with event-bot
+						stop
+							
+					else:
+						set {balance::%event-guild%::%id of event-user%} to {balance::%event-guild%::%id of event-user%} - 10
+						create embed:
+								
+							#set the title of embed to title with text "Succesfully created order ##%{orderid}%"
+							set the description of embed to "**Your order:**%nl%:cake: %{order}%%nl%%nl%**Order id:**%nl%:hash: %{orderid}%%nl%%nl%**Price:**%nl%:dollar: 10%nl%%nl%**Expected time:**%nl%:alarm_clock: %{avgtime}%"
+			
+							set the colour of the embed to color from rgb 244, 66 and 101
+								
+						send the last created embed to event-channel with event-bot
+						send "**%event-user%##%discriminator of event-user%** (%id of event-user%) lost 10 :dollar: for `ordering`, (in channel ##%event-channel% - %id of event-channel%) and now has :dollar: **%{balance::%event-guild%::%id of event-user%}%**" to channel with id "480456593121476619" with "Dessert"
+						reply with ":wave: **Want to support our project?**%nl%Apply to be a chef at https://bit.ly/2PjmD1j "
+									
+					
+						
+											
+											
+						if id of event-guild is "333949691962195969":
+							send "@everyone **Important Order** - %{order}% %nl% %nl%**Ordered by:** %event-user%##%discriminator of event-user% %nl% **Ordered in:** %name of event-guild% (%id of event-guild%)" to channel with id "478781796415307776" with "Dessert" and store it in {message.%id of event-user%}
+						else:
+							send "@here **New Order** - %{order}% %nl% %nl%**Ordered by:** %event-user%##%discriminator of event-user% %nl% **Ordered in:** %name of event-guild% (%id of event-guild%)" to channel with id "478781796415307776" with "Dessert" and store it in {message.%id of event-user%}
+						send "**%name of event-user%##%discriminator of event-user%** created order **##%{orderid}%** with request `%{order}%`" to channel with id "478798595743678484" with event-bot
+						wait 1 second
+						add {orderid} to {orders::%id of event-user%}
+						set {orderinfo.messageid.%{orderid}%} to "%{message.%id of event-user%}%"
+						set {orderinfo.author.%{orderid}%} to "%id of event-user%"
+						set {orderinfo.guild.%{orderid}%} to "%id of event-guild%"
+						set {orderinfo.order.%{orderid}%} to "%{order}%"
+						set {orderinfo.channel.%{orderid}%} to "%id of event-channel%"
+						set {orderinfo.status.%{orderid}%} to "Awaiting"
+						set {orderinfo.chef.%{orderid}%} to "478729456454729728"
+						set {myorder.%id of event-user%} to "%{orderid}%"
+						set {time.%id of event-user%} to now
+						set {orderinfo.ordertime.%{orderid}%} to now
+
+						set {newest} to {message.%id of event-user%}
+						set {newesetorder} to {newest}
+						set {orderinfo.messageid.%{newest}%} to "%{message.%id of event-user%}%"
+						add "%{message.%id of event-user%}%" to {pendinglist::*}
+						set {orderid.%{message.%id of event-user%}%} to {orderid}
+						add emote ":white_check_mark:" to {message.%id of event-user%} with "Dessert"
+						add emote ":negative_squared_cross_mark:" to {message.%id of event-user%} with "Dessert"
+					
+						if {autodeny::%{order}%} is set:
+							set {orderinfo.status.%{orderid}%} to "Rejected"
+							send ":warning: Your order has been rejected %nl%%nl%```Rejected for: [Auto] %{autodeny::%{order}%}%```%nl%If you believe this is incorrect, you can contact us at https://discord.gg/ueSmqgQ" to user with id "%id of event-user%" with event-bot
+							set {deletemsg.%{message.%id of event-user%}%} to true
+							add 1 to {warnings.%{orderinfo.author.%{order}%}%}
+							send "<@478729456454729728> rejected order **##%{orderid}%** (made by %id of event-user%) for `[Auto] %{autodeny::%{order}%}% [%{warnings.%{orderinfo.author.%{order}%}%}%/3]`" to channel with id "478798595743678484" with event-bot
+							stop
+					
+						if id of event-guild is not "333949691962195969":
+							wait 40 seconds
+							
+						wait 10 seconds
+						
+
+								
+						if {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} is "Canceled":
+							#delete {message.%id of event-user%} with event-bot
+							set {deletemsg.%{message.%id of event-user%}%} to true
+							stop
+							
+						if {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} is "Awaiting":
+							if {images.%{orderinfo.order.%{orderid.%{message.%id of event-user%}%}%}%::*} is set:
+								set {hubguild} to "478780582642450448"
+								#delete {message.%id of event-user%} with event-bot
+								set {deletemsg.%{message.%id of event-user%}%} to true
+								set {tempvar} to "478783306805280770"
+								send "Your order is now being made by chef **Mat##9410**!" to user with id "%{orderinfo.author.%{orderid.%{message.%id of event-user%}%}%}%" with "Dessert"
+								send "[AutoKitchen] [%{orderid.%{message.%id of event-user%}%}%] <@478729456454729728> has claimed order **%{orderid.%{message.%id of event-user%}%}%**" to channel with id "478945620493598720" with "Dessert"
+								send "<@%{orderinfo.author.%{orderid.%{message.%id of event-user%}%}%}%> your order is being made by Chef **Mat##9410**, it'll be done within 15 minutes!" to channel with id "%{orderinfo.channel.%{orderid.%{message.%id of event-user%}%}%}%" with "Dessert"
+								set {orderinfo.starttime.%{orderid.%{message.%id of event-user%}%}%} to now
+								set {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} to "Cooking"
+								set {orderinfo.chef.%{orderid.%{message.%id of event-user%}%}%} to "213849560508792832"
+								remove "%{message.%id of event-user%}%" from {pendinglist::*}
+								wait 1 minute
+							
+								if size of {images.%{orderinfo.order.%{orderid.%{message.%id of event-user%}%}%}%::*} is more than 1:
+									set {rng} to a random integer between 1 and size of {images.%{orderinfo.order.%{orderid.%{message.%id of event-user%}%}%}%::*}
+								else:
+									set {rng} to 1
+								set {orderinfo.img.%{orderid.%{message.%id of event-user%}%}%} to "%{images.%{orderinfo.order.%{orderid.%{message.%id of event-user%}%}%}%::%{rng}%}%"
+								create embed:
+									set the title of embed to title with text "Order completed"
+									set the description of embed to "Final product: %{orderinfo.img.%{orderid.%{message.%id of event-user%}%}%}%"
+									set the colour of the embed to color from rgb 244, 66 and 101
+									#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+									set the timestamp of embed to now
+								send the last created embed to channel with id "478945620493598720" with "Dessert"
+								set {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} to "Complete"
+								set {orderinfo.finishtime.%{orderid.%{message.%id of event-user%}%}%} to now
+								set {ordercontent} to {orderinfo.order.%{orderid.%{message.%id of event-user%}%}%}
+								set {msguser} to {orderinfo.author.%{orderid.%{message.%id of event-user%}%}%}
+								send "<@%{msguser}%> Your order of %{ordercontent}% has arrived!" to channel with id "%{orderinfo.channel.%{orderid.%{message.%id of event-user%}%}%}%" with "Dessert"
+								create embed:
+									set the title of embed to title with text "Order Complete"
+									set the description of embed to "%{orderinfo.img.%{orderid.%{message.%id of event-user%}%}%}%"
+									set the colour of the embed to color from rgb 244, 66 and 101
+									set the footer of embed to footer with text "##%{orderid.%{message.%id of event-user%}%}%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+								send the last created embed to channel with id "478943709443129345" with "Dessert"
+								send "Here it is: %{images.%{orderinfo.order.%{orderid.%{message.%id of event-user%}%}%}%::%{rng}%}%" to channel with id "%{orderinfo.channel.%{orderid.%{message.%id of event-user%}%}%}%" with "Dessert"
+
+									
+								send "<@478729456454729728> has completed **##%{orderid.%{message.%id of event-user%}%}%** (ordered by %{orderinfo.author.%{orderid.%{message.%id of event-user%}%}%}%) (%{images.%{orderinfo.order.%{orderid.%{message.%id of event-user%}%}%}%::%{rng}%}%)" to channel with id "478798595743678484" with event-bot
+								set {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} to "Completed"
+									
+								clear {myorder.%{msguser}%}
+
+							else:
+								wait 59 minutes
+								if {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} is "Canceled":
+									#delete {message.%id of event-user%} with event-bot
+									set {deletemsg.%{message.%id of event-user%}%} to true
+									stop
+								if {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} is "Bugged":
+									#delete {message.%id of event-user%} with event-bot
+									set {deletemsg.%{message.%id of event-user%}%} to true
+									stop
+									if {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} is "Rejected":
+									#delete {message.%id of event-user%} with event-bot
+									set {deletemsg.%{message.%id of event-user%}%} to true
+									stop
+								if {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} is "Awaiting":
+									send "@here order **##%{orderid.%{message.%id of event-user%}%}%** has been waiting over an hour!" to channel with id "478782040481726466" with "Dessert"
+									stop
+
+						
+				else:
+					if difference between now and {time.%id of event-user%} is more than 10 minutes:
+						set {order::*} to event-string split at "<@478729456454729728> order "
+						set {order} to {order::2}
+						set {orderid} to a random integer between 111111 and 999999
+						replace "3" in {orderid} with "a"
+						replace "6" in {orderid} with "b"
+						replace "9" in {orderid} with "c"
+						replace "0" in {orderid} with "d"
+						set {newesetorder} to {orderid}
+						set {lastestorder.%id of event-user%} to {orderid}
+						if "%{order}%" contains "[" or "(":
+							reply with "Please don't use symbols or formatting in your order!%nl%A correct order should look like <@478729456454729728> order cake"
+							stop
+						wait 8 ticks
+						if {balance::%event-guild%::%id of event-user%} is less than 10:
+							create embed:
+								#set the title of embed to title with text "Error with command"
+								set the description of embed to "You need at least :dollar: 10 to order this!%nl%You currently have :dollar: %{balance::%event-guild%::%id of event-user%}%"
+	
+								set the colour of the embed to color from rgb 244, 66 and 101
+								#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+								set the timestamp of embed to now
+							send the last created embed to event-channel with event-bot
+							stop
+								
+						else:
+							set {balance::%event-guild%::%id of event-user%} to {balance::%event-guild%::%id of event-user%} - 10
+							create embed:
+									
+								#set the title of embed to title with text "Succesfully created order ##%{orderid}%"
+								set the description of embed to "**Your order:**%nl%:cake: %{order}%%nl%%nl%**Order id:**%nl%:hash: %{orderid}%%nl%%nl%**Price:**%nl%:dollar: 10%nl%%nl%**Expected time:**%nl%:alarm_clock: %{avgtime}%"
+			
+								set the colour of the embed to color from rgb 244, 66 and 101
+									
+							send the last created embed to event-channel with event-bot
+										
+											
+							if id of event-guild is "333949691962195969":
+								send "@everyone **Important Order** - %{order}% %nl% %nl%**Ordered by:** %event-user%##%discriminator of event-user% %nl%**Ordered in:** %name of event-guild% (%id of event-guild%)" to channel with id "478781796415307776" with "Dessert" and store it in {message.%id of event-user%}
+							else:
+								send "@here **New Order** - %{order}% %nl% %nl%**Ordered by:** %event-user%##%discriminator of event-user% %nl% **Ordered in:** %name of event-guild% (%id of event-guild%)" to channel with id "478781796415307776" with "Dessert" and store it in {message.%id of event-user%}
+							send "**%event-user%##%discriminator of event-user%** (%id of event-user%) lost 10 :dollar: for `ordering`, (in channel ##%event-channel% - %id of event-channel%) and now has :dollar: **%{balance::%event-guild%::%id of event-user%}%**" to channel with id "480456593121476619" with "Dessert"
+							send "**%name of event-user%##%discriminator of event-user%** created order **##%{orderid}%** with request `%{order}%`" to channel with id "478798595743678484" with event-bot
+								
+								
+						
+							add {orderid} to {orders::%id of event-user%}
+							set {orderinfo.messageid.%{orderid}%} to "%{message.%id of event-user%}%"
+							set {orderinfo.author.%{orderid}%} to "%id of event-user%"
+							set {orderinfo.author.%{orderid}%} to "%id of event-user%"
+							set {orderinfo.guild.%{orderid}%} to "%id of event-guild%"
+							set {orderinfo.order.%{orderid}%} to "%{order}%"
+							set {orderinfo.channel.%{orderid}%} to "%id of event-channel%"
+							set {orderinfo.status.%{orderid}%} to "Awaiting"
+							set {orderinfo.chef.%{orderid}%} to "478783306805280770"
+							set {time.%id of event-user%} to now
+							set {myorder.%id of event-user%} to "%{orderid}%"
+							set {orderinfo.ordertime.%{orderid}%} to now
+
+							set {newest} to {message.%id of event-user%}
+							set {newesetorder} to {newest}
+							set {orderinfo.messageid.%{newest}%} to "%{message.%id of event-user%}%"
+							add "%{message.%id of event-user%}%" to {pendinglist::*}
+							set {orderid.%{message.%id of event-user%}%} to {orderid}
+							add emote ":white_check_mark:" to {message.%id of event-user%} with "Dessert"
+							add emote ":negative_squared_cross_mark:" to {message.%id of event-user%} with "Dessert"
+							
+							if {autodeny::%{order}%} is set:
+								set {orderinfo.status.%{orderid}%} to "Rejected"
+								add 1 to {warnings.%{orderinfo.author.%{order}%}%}
+								send ":warning: Your order has been rejected %nl%%nl%```Rejected for: [Auto] %{autodeny::%{order}%}% [%{warnings.%{orderinfo.author.%{order}%}%}%/3]```%nl%If you believe this is incorrect, you can contact us at https://discord.gg/ueSmqgQ" to user with id "%id of event-user%" with event-bot
+								set {deletemsg.%{message.%id of event-user%}%} to true
+								send "<@478729456454729728> rejected order **##%{orderid}%** (made by %id of event-user%) for `[Auto] %{autodeny::%{order}%}%`" to channel with id "478798595743678484" with event-bot
+								stop
+							
+							if id of event-guild is not "333949691962195969":
+								wait 40 seconds
+								
+							wait 10 seconds
+								
+
+										
+							if {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} is "Canceled":
+								#delete {message.%id of event-user%} with event-bot
+								set {deletemsg.%{message.%id of event-user%}%} to true
+								stop
+								
+							if {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} is "Awaiting":
+								if {images.%{orderinfo.order.%{orderid.%{message.%id of event-user%}%}%}%::*} is set:
+									set {hubguild} to "478780582642450448"
+									#delete {message.%id of event-user%} with event-bot
+									set {deletemsg.%{message.%id of event-user%}%} to true
+									set {tempvar} to "478783306805280770"
+									send "Your order is now being prepared by chef **Mat##9410**!" to user with id "%{orderinfo.author.%{orderid.%{message.%id of event-user%}%}%}%" with "Dessert"
+									send "[AutoKitchen] [%{orderid.%{message.%id of event-user%}%}%] <@478729456454729728> has claimed order **%{orderid.%{message.%id of event-user%}%}%**" to channel with id "478945620493598720" with "Dessert"
+									send "<@%{orderinfo.author.%{orderid.%{message.%id of event-user%}%}%}%> your order is being prepared by Chef **Mat##9410** it'll be done within 5 minutes!" to channel with id "%{orderinfo.channel.%{orderid.%{message.%id of event-user%}%}%}%" with "Dessert"
+									set {orderinfo.starttime.%{orderid.%{message.%id of event-user%}%}%} to now
+									set {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} to "Cooking"
+									set {orderinfo.chef.%{orderid.%{message.%id of event-user%}%}%} to "213849560508792832"
+									remove "%{message.%id of event-user%}%" from {pendinglist::*}
+									wait 1 minute
+								
+									if size of {images.%{orderinfo.order.%{orderid.%{message.%id of event-user%}%}%}%::*} is more than 1:
+										set {rng} to a random integer between 1 and size of {images.%{orderinfo.order.%{orderid.%{message.%id of event-user%}%}%}%::*}
+									else:
+										set {rng} to 1
+									set {orderinfo.img.%{orderid.%{message.%id of event-user%}%}%} to "%{images.%{orderinfo.order.%{orderid.%{message.%id of event-user%}%}%}%::%{rng}%}%"
+									create embed:
+										set the title of embed to title with text "Order completed"
+										set the description of embed to "Final product: %{orderinfo.img.%{orderid.%{message.%id of event-user%}%}%}%"
+										set the colour of the embed to color from rgb 244, 66 and 101
+										#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+										set the timestamp of embed to now
+									send the last created embed to channel with id "478945620493598720" with "Dessert"
+									set {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} to "Complete"
+									set {orderinfo.finishtime.%{orderid.%{message.%id of event-user%}%}%} to now
+									set {ordercontent} to {orderinfo.order.%{orderid.%{message.%id of event-user%}%}%}
+									set {msguser} to {orderinfo.author.%{orderid.%{message.%id of event-user%}%}%}
+									send "<@%{msguser}%> Your order of %{ordercontent}% has arrived!" to channel with id "%{orderinfo.channel.%{orderid.%{message.%id of event-user%}%}%}%" with "Dessert"
+									create embed:
+										set the title of embed to title with text "Order Complete"
+										set the description of embed to "%{orderinfo.img.%{orderid.%{message.%id of event-user%}%}%}%"
+										set the colour of the embed to color from rgb 244, 66 and 101
+										set the footer of embed to footer with text "##%{orderid.%{message.%id of event-user%}%}%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+									send the last created embed to channel with id "478943709443129345" with "Dessert"
+									send "Here it is: %{images.%{orderinfo.order.%{orderid.%{message.%id of event-user%}%}%}%::%{rng}%}%" to channel with id "%{orderinfo.channel.%{orderid.%{message.%id of event-user%}%}%}%" with "Dessert"
+
+									create embed:
+										set the description of embed to "<@478729456454729728> has completed **##%{orderid.%{message.%id of event-user%}%}%** (ordered by %{orderinfo.author.%{orderid.%{message.%id of event-user%}%}%}%) (%{images.%{orderinfo.order.%{orderid.%{message.%id of event-user%}%}%}%::%{rng}%}%)"
+									send the last created embed to channel with id "478798595743678484" with "Dessert"
+									set {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} to "Completed"
+										
+									clear {myorder.%{msguser}%}
+
+								else:
+									wait 59 minutes
+									if {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} is "Canceled":
+										#delete {message.%id of event-user%} with event-bot
+										set {deletemsg.%{message.%id of event-user%}%} to true
+										stop
+									if {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} is "Bugged":
+										#delete {message.%id of event-user%} with event-bot
+										set {deletemsg.%{message.%id of event-user%}%} to true
+										stop
+										if {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} is "Rejected":
+										#delete {message.%id of event-user%} with event-bot
+										set {deletemsg.%{message.%id of event-user%}%} to true
+										stop
+									if {orderinfo.status.%{orderid.%{message.%id of event-user%}%}%} is "Awaiting":
+										send "@here order **##%{orderid.%{message.%id of event-user%}%}%** has been waiting over an hour!" to channel with id "478782040481726466" with "Dessert"
+										stop
+
+							
+					else:
+						
+						create embed:
+							set the title of embed to title with text "Issue with command!"
+							set {waiting} to difference between {time.%id of event-user%} and now
+							set {time} to "%difference between 10 minutes and {waiting}%"
+							set the description of embed to "You may only order once every 10 minutes.%nl%You have %{time}% remaining"
+	
+							set the colour of the embed to color from rgb 244, 66 and 101
+							#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+							set the timestamp of embed to now
+						send the last created embed to event-channel with event-bot
+						stop
+						
+			else:
+				
+				create embed:
+					set the title of embed to title with text "Issue with command!"
+					set {waiting} to difference between {time.%id of event-user%} and now
+					set {time} to "%difference between 10 minutes and {waiting}%"
+					set the description of embed to "You used the wrong syntax%nl%Correct usage: **@Dessert Shop order [order info]**"
+	
+					set the colour of the embed to color from rgb 244, 66 and 101
+					#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+					set the timestamp of embed to now
+				send the last created embed to event-channel with event-bot
+				stop
+
+		if {subcommand} is "info":
+				
+			set {test} to bot information
+			send {test} to event-channel with event-bot
+			stop
+			
+		if {subcommand} is "orderinfo":
+
+			if {_args::3} is set:
+				if {orderinfo.order.%{_args::3}%} is set:
+					if event-member has role with id "478782445844430849":
+						
+						create embed:
+							set the title of embed to title with text "Information about order ##%{_args::3}%"
+							set {discrim} to "##%discriminator of user with id {orderinfo.author.%{_args::3}%}%"
+							set {author} to "%name of user with id {orderinfo.author.%{_args::3}%}%"
+							add split field named "**Orderer:**" with value "%{author}%%{discrim}%" to embed
+							if {orderinfo.chef.%{_args::3}%} is set:
+								add split field named "**Chef:**" with value "%name of user with id {orderinfo.chef.%{_args::3}%}%##%discriminator of user with id {orderinfo.chef.%{_args::3}%}%" to embed
+							add split field named "**Current status:**" with value "%{orderinfo.status.%{_args::3}%}%" to embed
+							add field named "**Ordered from:**" with value "%name of guild with id {orderinfo.guild.%{_args::3}%}% (%{orderinfo.guild.%{_args::3}%}%)" to embed
+
+							add field named "**Request:**" with value "%{orderinfo.order.%{_args::3}%}%" to embed
+							
+
+							if {orderinfo.img.%{_args::3}%} is set:
+								add split field named "**Image:**" with value "%{orderinfo.img.%{_args::3}%}%" to embed
+							if {orderinfo.starttime.%{_args::3}%} is set:
+								add split field named "**Start time:**" with value "%{orderinfo.starttime.%{_args::3}%}%" to embed
+							if {orderinfo.finishtime.%{_args::3}%} is set:
+								add split field named "**Finish time:**" with value "%{orderinfo.finishtime.%{_args::3}%}%" to embed
+		
+							set the colour of the embed to color from rgb 244, 66 and 101
+							#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+							set the timestamp of embed to now
+						send the last created embed to event-channel with event-bot
+						stop
+						
+				else:
+						
+					reply with "Order not found"
+						
+			else:
+				
+				reply with "Arg not set"
+
+			
+		if {subcommand} is "mystats":
+			if event-member has role with id "478782445844430849":
+				if {chef.%id of event-user%.counter} is not set:
+					set {chef.%id of event-user%.counter} to 0
+				if {chef.%id of event-user%.accepted} is not set:
+					set {chef.%id of event-user%.accepted} to 0
+				if {chef.%id of event-user%.rejected} is not set:
+					set {chef.%id of event-user%.rejected} to 0
+				if {chef.%id of event-user%.ratings} is not set:
+					set {chef.%id of event-user%.ratings} to 0
+				if {chef.%id of event-user%.ratinglist} is not set:
+					set {chef.%id of event-user%.ratinglist} to 0
+				if {weekly.%id of event-user%} is not set:
+					set {weekly.%id of event-user%} to 0
+
+				create embed:
+					set the title of embed to title with text "Statistics of chef %event-user%"
+					add split field named "**Total orders:**" with value "%{chef.%id of event-user%.counter}%" to embed
+					add split field named "**Accepted orders:**" with value "%{chef.%id of event-user%.accepted}%" to embed
+					add split field named "**Rejected orders:**" with value "%{chef.%id of event-user%.rejected}%" to embed
+					add split field named "**Total ratings**" with value "%{chef.%id of event-user%.ratings}%" to embed
+					set {avg} to {chef.%id of event-user%.ratinglist} / {chef.%id of event-user%.ratings}
+					add split field named "**Average rating**" with value "%{avg}%" to embed
+					add split field named "**Orders this week**" with value "%{weekly.%id of event-user%}%" to embed
+					set the colour of the embed to color from rgb 244, 66 and 101
+					#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+					set the timestamp of embed to now
+				send the last created embed to event-channel with event-bot
+				stop
+			else:
+#				
+				create embed:
+					set the title of embed to title with text "Error running command"
+					set the description of embed to "You must be a **Chef** to execute this command"
+					set the colour of the embed to color from rgb 244, 66 and 101
+					#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+					set the timestamp of embed to now
+				send the last created embed to event-channel with event-bot
+				stop
+
+		
+		if {subcommand} is "balance" or "bal" or "money":
+			if {_args::3} is not set:
+			
+				create embed:
+					set the title of embed to title with text "Your balance"
+					set the description of embed to "You have :dollar: %{balance::%event-guild%::%id of event-user%}%"
+					set the description of embed to "You have :dollar: %{balance::%event-guild%::%id of event-user%}%"
+					set the colour of the embed to color from rgb 244, 66 and 101
+					#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+
+				send the last created embed to event-channel with event-bot
+				stop
+				
+			else:
+				set {_var::*} to event-message's mentioned users
+				
+				create embed:
+
+					set the title of embed to title with text "Balance of %{_var::2}%"
+					set {name} to {_var::2}
+					set {id} to "%id of {name}%"
+					set the description of embed to "They have :dollar: %{balance::%event-guild%::%{id}%}%"
+					set the colour of the embed to color from rgb 244, 66 and 101
+					#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+
+				send the last created embed to event-channel with event-bot
+				stop
+				
+		if {subcommand} is "test":
+
+
+			
+		if {subcommand} is "img":
+			set {invites} to invite link of guild with id {orderinfo.guild.%{chef.%id of event-user%.currentorder}%}
+
+			if {_args::3} is not set:
+				reply with "[Kitchen] [%{chef.%id of event-user%.currentorder}%] Invalid syntax, use `@Dessert Shop img [link]`"
+				stop
+				
+			if {chef.%id of event-user%.currentorder} is set:
+				if {_args::3} does not contain "imgur" or "kuuv":
+					reply with "[Kitchen] [%{chef.%id of event-user%.currentorder}%] Please use imgur or kuuvio"
+					stop
+				if {_args::3} does not contain "png" or "jpg" or "jpeg":
+					reply with "[Kitchen] [%{chef.%id of event-user%.currentorder}%] Must be an image url, not a page url"
+					stop
+				if {images.%{orderinfo.order.%{chef.%id of event-user%.currentorder}%}%::*} contains {_args::3}:
+					reply with "[Kitchen] [%{chef.%id of event-user%.currentorder}%] You can't use an image that has been used before"
+					stop
+				set {orderinfo.img.%{chef.%id of event-user%.currentorder}%} to "%{_args::3}%"
+				add 1 to {chef.%id of event-user%.counter}
+				add 1 to {weekly.%id of event-user%}
+				add 1 to {chef.%id of event-user%.accepted}
+	
+
+				send "<@%{orderinfo.author.%{chef.%id of event-user%.currentorder}%}%> Your order has been prepared and will be delivered soon!" to channel with id {orderinfo.channel.%{chef.%id of event-user%.currentorder}%} with event-bot
+	
+				set {orderinfo.status.%{chef.%id of event-user%.currentorder}%} to "Being delivered"
+				set {orderinfo.finishtime.%{chef.%id of event-user%.currentorder}%} to now
+				set {ordercontent} to {orderinfo.order.%{chef.%id of event-user%.currentorder}%}
+				set {msguser} to {orderinfo.author.%{chef.%id of event-user%.currentorder}%}
+				
+				create embed:
+					set the title of embed to title with text "Order Complete"
+					set the description of embed to "%{_args::3}%"
+					set {id} to id of event-user
+					set the author info of the embed to author named "%event-user%##%discriminator of event-user%" with no url and icon "https://cdn.discordapp.com/attachments/407256993632616468/480052798696980491/icecream-4-icon.png"
+					set the colour of the embed to color from rgb 244, 66 and 101
+					set the footer of embed to footer with text "##%{chef.%id of event-user%.currentorder}%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+				send the last created embed to channel with id "478943709443129345" with "Dessert"
+				
+				reply with "[Kitchen] [%{chef.%id of event-user%.currentorder}%] <@%id of event-user%> You completed order **##%{chef.%id of event-user%.currentorder}%** in %difference between now and {orderinfo.starttime.%{chef.%id of event-user%.currentorder}%}% (You now have **%{chef.%id of event-user%.accepted}%** orders completed)"
+				
+				set {avgtime} to "%difference between now and {orderinfo.ordertime.%{chef.%id of event-user%.currentorder}%}%"
+				
+				
+				
+				
+				
+				send "<@%id of event-user%> has completed order **##%{chef.%id of event-user%.currentorder}%** (ordered by %{orderinfo.author.%{chef.%id of event-user%.currentorder}%}%) (%{_args::3}%)" to channel with id "478798595743678484" with event-bot
+				
+				
+				add "%{_args::3}%" to {images.%{orderinfo.order.%{chef.%id of event-user%.currentorder}%}%::*}
+				reply with "[Kitchen] [%{chef.%id of event-user%.currentorder}%] You earned :dollar: 10 by completing this order!"
+				add 10 to {balance::%event-guild%::%id of event-user%}
+				if {chef.%id of event-user%.counter} is divisible by 10:
+					send "**<@%id of event-user%>** has completed a total of **%{chef.%id of event-user%.counter}%** orders!" to channel with id "483141960249638913" with event-bot
+				if {weekly.%id of event-user%} is divisible by 10:
+					send "**<@%id of event-user%>** has completed **%{weekly.%id of event-user%}%** orders this week!" to channel with id "483141960249638913" with event-bot
+				
+				if {invites} is not set:
+					wait 10 seconds
+					set {bug} to false
+				
+					send "<@%{orderinfo.author.%{chef.%id of event-user%.currentorder}%}%> Your order has arrived!" to channel with id {orderinfo.channel.%{chef.%id of event-user%.currentorder}%} with event-bot
+					if {orderinfo.note.%{chef.%id of event-user%.currentorder}%} is not set:
+						send "Here is your **%{orderinfo.order.%{chef.%id of event-user%.currentorder}%}%** - %{orderinfo.img.%{chef.%id of event-user%.currentorder}%}%" to channel with id {orderinfo.channel.%{chef.%id of event-user%.currentorder}%} with event-bot
+					else if {orderinfo.note.%{chef.%id of event-user%.currentorder}%} is set:
+						send "Here is your **%{orderinfo.order.%{chef.%id of event-user%.currentorder}%}%** - %{orderinfo.img.%{chef.%id of event-user%.currentorder}%}%%nl%%nl%**Note from Chef:** `%{orderinfo.note.%{chef.%id of event-user%.currentorder}%}%`" to channel with id {orderinfo.channel.%{chef.%id of event-user%.currentorder}%} with event-bot
+					set {orderinfo.status.%{chef.%id of event-user%.currentorder}%} to "Completed"
+					clear {myorder.%{msguser}%}
+					clear {chef.%id of event-user%.currentorder}
+					
+					send "**%event-user%##%discriminator of event-user%** (%id of event-user%) earned 10 :dollar: for `completing an order`, (in channel ##%event-channel% - %id of event-channel%) and now has :dollar: **%{balance::%event-guild%::%id of event-user%}%**" to channel with id "480456593121476619" with "Dessert"
+					clear {invites}
+
+					
+				else if {invites} is set:
+					send "@here%nl%%nl%New order ready to be delivered!%nl%Claim for full information." to channel with id "478782145888780289" with event-bot and store it in {delivery.%{chef.%id of event-user%.currentorder}%}
+					add emote ":white_check_mark:" to {delivery.%{chef.%id of event-user%.currentorder}%} with "Dessert"
+					set {deliverysystem.orderid.%{delivery.%{chef.%id of event-user%.currentorder}%}%} to "%{chef.%id of event-user%.currentorder}%"
+					set {deliverysystem.link.%{delivery.%{chef.%id of event-user%.currentorder}%}%} to "%{invites}%"
+					set {deliverysystem.orderer.%{delivery.%{chef.%id of event-user%.currentorder}%}%} to "%{orderinfo.author.%{chef.%id of event-user%.currentorder}%}%"
+					set {deliverysystem.image.%{delivery.%{chef.%id of event-user%.currentorder}%}%} to "%{_args::3}%"
+					clear {myorder.%{msguser}%}
+					clear {chef.%id of event-user%.currentorder}
+					clear {invites}
+					stop
+
+
+		if {subcommand} is "cancel":
+			
+				
+			if {myorder.%id of event-user%} is set:
+				reply with "You have succesfully canceled your order **(##%{myorder.%id of event-user%}%)**"
+				set {orderinfo.status.%{myorder.%id of event-user%}%} to "Canceled"
+				if {orderinfo.chef.%{myorder.%id of event-user%}%} is set:
+					send "<@%{orderinfo.chef.%{myorder.%id of event-user%}%}%> your order was canceled by the orderer" to channel with id "478781835246305281" with event-bot
+					clear {chef.%{orderinfo.chef.%{myorder.%id of event-user%}%}%.currentorder}
+				clear {myorder.%id of event-user%}
+				stop
+				
+			else if {_args::3} is set:
+				if event-member has role with id "478782445844430849":
+					set {moveid} to {_args::3}
+					send "[Office] [%{moveid}%] <@%id of event-user%> has canceled order **%{moveid}%**" to channel with id "478782040481726466" with event-bot
+					send "[Office] [%{moveid}%] Please give your reason for denial below!" to channel with id "478782040481726466" with event-bot
+					set {denialmode.%id of event-user%} to "%{moveid}%"
+					remove "%{orderinfo.messageid.%{moveid}%}%" from {pendinglist::*}
+					add 1 to {chef.%id of event-user%.counter}
+					add 1 to {weekly.%id of event-user%}
+					clear {chef.%id of event-user%.currentorder}
+					set {orderinfo.status.%{moveid}%} to "Canceled"
+					stop
+				else:
+					create embed:
+						set the title of embed to title with text "Issue with command"
+						add split field named "You don't have permission to run this command" with value "You must be a chef!" to embed
+						set the colour of the embed to color from rgb 244, 66 and 101
+						#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+						set the timestamp of embed to now
+					send the last created embed to event-channel with event-bot
+					stop
+
+
+
+
+
+
+		if {subcommand} is "invite":
+			reply with "You can invite me to your server here: https://bit.ly/2oc99Ib"
+			stop
+
+		if {subcommand} is "pending":
+			if size of {pendinglist::*} is more than 0:
+			
+				create embed:
+					set the title of embed to title with text "%size of {pendinglist::*}% currently in the queue!"
+					set the colour of the embed to color from rgb 244, 66 and 101
+					#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+					set the timestamp of embed to now
+				send the last created embed to event-channel with event-bot
+				stop
+				
+			else:
+				reply with "No currently pending orders"
+				stop
+
+		if {subcommand} is "tip":
+			if {_args::3} is set:
+				if "%{_args::3}%" contains "@" or "<":
+					reply with "Please use <@478729456454729728> tip [amount]"
+					stop
+				if "%{_args::3}%" contains "a" or "b" or "c" or "d" or "e" or "f" or "g" or "h" or "j" or "k" or "l" or "m" or "n" or "p" or "q" or "s" or "t" or "u" or "v" or "w" or "x" or "y" or "z" or "$" or " ":
+					reply with "Please use <@478729456454729728> tip [amount]"
+					stop
+				set {amount} to "%{_args::3}%" parsed as an integer
+
+				if {amount} is 0:
+					reply with "You can't tip 0 :dollar:"
+					stop
+				if {_args::4} is set:
+					reply with "Please use <@478729456454729728> tip [amount]"
+					stop
+				if {orderinfo.chef.%{lastestorder.%id of event-user%}%} is not set:
+					reply with "The chef you're trying to tip couldn't be found :thinking:"
+					stop
+				if {orderinfo.chef.%{lastestorder.%id of event-user%}%} is "478783306805280770":
+					reply with "This order isn't finished yet, try once it's finished."
+					stop
+				if {amount} is divisible by 1:
+					if {balance::%event-guild%::%id of event-user%} is more than {amount} - 1:
+						if {lastestorder.%id of event-user%} is set:
+							create embed:
+								set the title of embed to title with text "You have tipped chef %name of user with id {orderinfo.chef.%{lastestorder.%id of event-user%}%}%!"
+								set the description of embed to "You gave %name of user with id {orderinfo.chef.%{lastestorder.%id of event-user%}%}% a total of :dollar: %{_args::3}%"
+								
+								set the colour of the embed to color from rgb 244, 66 and 101
+								if {version} is not set:
+									set {version} to 1
+								set the footer of embed to footer with text "Dessert Shop v%{version}%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+								set the timestamp of embed to now
+							send the last created embed to event-channel with event-bot
+							add {amount} to {balance::%event-guild%::%{orderinfo.chef.%{lastestorder.%id of event-user%}%}%}
+							set {balance::%event-guild%::%id of event-user%} to {balance::%event-guild%::%id of event-user%} - {amount}
+							send "**%event-user%##%discriminator of event-user%** (%id of event-user%) lost %{_args::3}% :dollar: for `tipping` (in channel ##%event-channel% - %id of event-channel%) and now has :dollar: **%{balance::%event-guild%::%id of event-user%}%**" to channel with id "480456593121476619" with "Dessert"
+							send "**%name of user with id {orderinfo.chef.%{lastestorder.%id of event-user%}%}%##%discriminator of user with id {orderinfo.chef.%{lastestorder.%id of event-user%}%}%** gained %{_args::3}% :dollar: for `tip from %event-user%`, (in channel ##%event-channel% - %id of event-channel%) and now has :dollar: **%{balance::%event-guild%::%{orderinfo.chef.%{lastestorder.%id of event-user%}%}%}%**" to channel with id "480456593121476619" with "Dessert"
+							send "<@%{orderinfo.chef.%{lastestorder.%id of event-user%}%}%> was tipped %{_args::3}% :dollar: by **%event-user%##%discriminator of event-user%** (%id of event-user%) for order **##%{lastestorder.%id of event-user%}%** (in guild %name of event-guild% - %id of event-guild%)" to channel with id "480441058409316374" with event-bot
+							stop
+						else:
+
+							create embed:
+								set the title of embed to title with text "Issue with command"
+								set the description of embed to "You don't have enough funds!"
+									
+								set the colour of the embed to color from rgb 244, 66 and 101
+								if {version} is not set:
+									set {version} to 1
+								set the footer of embed to footer with text "Dessert Shop v%{version}%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+								set the timestamp of embed to now
+							send the last created embed to event-channel with event-bot
+							stop
+					else:
+						create embed:
+							set the title of embed to title with text "Issue with command"
+							set the description of embed to "You don't have enough funds!"
+								
+							set the colour of the embed to color from rgb 244, 66 and 101
+							if {version} is not set:
+								set {version} to 1
+							set the footer of embed to footer with text "Dessert Shop v%{version}%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+							set the timestamp of embed to now
+						send the last created embed to event-channel with event-bot
+						stop
+				else:
+					reply with "Tip amount must be at least :dollar: 1"
+			stop
+				
+		if {subcommand} is "help":
+
+			create embed:
+				set the title of embed to title with text "List of commands"
+				set the description of embed to "A full list of bot commands%nl%%nl%**Public commands:**%nl%`@Dessert Shop order [order]` - Allows you to order a dessert!%nl%`@Dessert Shop myorder` - Allows you to see information about your order%nl%`@Dessert Shop invite` - Allows you to invite the bot to your discord.%nl%`@Dessert Shop daily` - Claim your daily voting reward%nl%`@Dessert Shop cancel` - Allows you to cancel your current order%nl%`@Dessert Shop info` - Information about the dessert shop bot!%nl%`@Dessert Shop balance` - Shows you your current balance%nl%`@Dessert Shop tip [amount]` - Tip the person who made your order%nl%`@Dessert Shop top <global>` - See the top balances in guild or globally%nl%%nl%**Server manager commands:**%nl%`@Dessert Shop settings` - Edit the settings for this server%nl%%nl%**Premium commands:**%nl%`@Dessert Shop change` - Allows you to change your current order"
+				
+				set the colour of the embed to color from rgb 244, 66 and 101
+				if {version} is not set:
+					set {version} to 1
+				
+			send the last created embed to event-channel with event-bot
+			stop
+
+		if {subcommand} is "myorder":
+			if {myorder.%id of event-user%} is set:
+				
+				create embed:
+					set the title of embed to title with text "Your current order:"
+					set the description of embed to "Your order: %{orderinfo.order.%{myorder.%id of event-user%}%}%"
+					set the colour of the embed to color from rgb 244, 66 and 101
+					set the footer of embed to footer with text "Status: %{orderinfo.status.%{myorder.%id of event-user%}%}%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+					set the timestamp of embed to now
+				send the last created embed to event-channel with event-bot
+				stop
+
+			else:
+				
+				create embed:
+					set the title of embed to title with text "Error with command!"
+					set the description of embed to "You currently have no order placed!"
+					set the colour of the embed to color from rgb 244, 66 and 101
+					#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+					set the timestamp of embed to now
+				send the last created embed to event-channel with event-bot
+				stop
+				
+			stop
+			
+		if {subcommand} is "daily":
+			if {pendingamount.%id of event-user%} is more than 0:
+				set {dailytime.%id of event-user%} to now
+				add {pendingamount.%id of event-user%} to {balance::%event-guild%::%id of event-user%}
+				send "**%event-user%##%discriminator of event-user%** (%id of event-user%) earned %{pendingamount.%id of event-user%}% :dollar: for `daily money`, (in channel ##%event-channel% - %id of event-channel%) and now has :dollar: **%{balance::%event-guild%::%id of event-user%}%**" to channel with id "480456593121476619" with "Dessert"
+				create embed:
+					set the title of embed to title with text "Claimed your daily reward!"
+					set the description of embed to "You have gained %{pendingamount.%id of event-user%}% :dollar:"
+					set the colour of the embed to Aqua
+					#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+				send the last created embed to event-channel with event-bot
+				set {pendingamount.%id of event-user%} to 0
+				stop
+			else:
+				create embed:
+					set the title of embed to title with text "Issue with command!"
+					set the description of embed to "You haven't voted for the bot today!%nl%You can vote for us at **https://bit.ly/2LqgaOP**"
+					set the colour of the embed to Aqua
+					#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+				send the last created embed to event-channel with event-bot
+				stop
+				
+
+						
+
+
+			
+		if {subcommand} is "blacklist":
+			if {_args::3} is "user":
+				if event-member has role with id "478782445844430849":
+					if {_args::4} is set:
+						if {_args::4} is "add":
+							add {_args::5} to {userblocklist::*}
+							set {userinfo.blocked.%{_args::5}%} to true
+							reply with "User %{_args::5}% has been blacklisted!"
+							send "**%{_args::5}%** has been blacklisted by <@%id of event-user%>" to channel with id "479411750710804495" with event-bot
+							add role with id "5151561851" to roles of event-user in guild with id "478780582642450448" with event-bot
+							stop
+						if {_args::4} is "remove":
+							remove {_args::5} from {userblocklist::*}
+							clear {userinfo.blocked.%{_args::5}%}
+							reply with "User %{_args::5}% has been unblacklisted!"
+							send "**%{_args::5}%** has been unblacklisted by <@%id of event-user%>" to channel with id "479411750710804495" with event-bot
+							remove role with id "5151561851" from roles of event-user in guild with id "478780582642450448" with event-bot
+							stop
+						else:
+							
+							create embed:
+								set the title of embed to title with text "Error with command!"
+								set the description of embed to "Invalid syntax%nl%Correct usage: **@Dessert Shop blacklist [user/guild] [add/remove] [id]**"
+								set the colour of the embed to color from rgb 244, 66 and 101
+								#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+								set the timestamp of embed to now
+							send the last created embed to event-channel with event-bot
+							stop
+							
+					else:
+						
+						
+						create embed:
+							set the title of embed to title with text "Error with command!"
+							set the description of embed to "Invalid syntax%nl%Correct usage: **@Dessert Shop blacklist [user/guild] [add/remove] [id]**"
+							set the colour of the embed to color from rgb 244, 66 and 101
+							#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+							set the timestamp of embed to now
+						send the last created embed to event-channel with event-bot
+						stop
+						
+				else:
+					
+					create embed:
+						set the title of embed to title with text "Error with command!"
+						set the description of embed to "You don't have permission to execute this command"
+						set the colour of the embed to color from rgb 244, 66 and 101
+						#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+						set the timestamp of embed to now
+					send the last created embed to event-channel with event-bot
+					stop
+						
+			if {_args::3} is "guild":
+				if event-member has role with id "478782445844430849":
+					if {_args::4} is set:
+						if {_args::4} is "add":
+							if {_args::5} is "478780582642450448":
+								reply with "Unable to blacklist guild"
+								stop
+								
+							add {_args::5} to {guildblocklist::*}
+							set {guildinfo.blocked.%{_args::5}%} to true
+							send "**%{_args::5}%** has been blacklisted by <@%id of event-user%>" to channel with id "<blacklist channel>" with event-bot
+							reply with "Guild %{_args::5}% has been blacklisted!"
+							stop
+						if {_args::4} is "remove":
+							remove {_args::5} from {guildblocklist::*}
+							clear {guildinfo.blocked.%{_args::5}%}
+							reply with "Guild %{_args::5}% has been unblacklisted!"
+							send "**%{_args::5}%** has been unblacklisted by <@%id of event-user%>" to channel with id "<blacklist channel>" with event-bot
+							stop
+						else:
+							
+							create embed:
+								set the title of embed to title with text "Error with command!"
+								set the description of embed to "Invalid syntax%nl%Correct usage: **@Dessert Shop blacklist [user/guild] [add/remove] [id]**"
+								set the colour of the embed to color from rgb 244, 66 and 101
+								#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+								set the timestamp of embed to now
+								send the last created embed to event-channel with event-bot
+							stop
+								
+					else:
+						create embed:
+							set the title of embed to title with text "Error with command!"
+							set the description of embed to "Invalid syntax%nl%Correct usage: **@Dessert Shop blacklist [user/guild] [add/remove] [id]**"
+							set the colour of the embed to color from rgb 244, 66 and 101
+							#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+							set the timestamp of embed to now
+						send the last created embed to event-channel with event-bot
+						stop
+				else:
+					create embed:
+						set the title of embed to title with text "Error with command!"
+						set the description of embed to "You don't have permission"
+						set the colour of the embed to color from rgb 244, 66 and 101
+						#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+						set the timestamp of embed to now
+					send the last created embed to event-channel with event-bot
+					stop
+				
+			else:
+				create embed:
+					set the title of embed to title with text "Error with command!"
+					set the description of embed to "Invalid syntax%nl%Correct usage: **@Dessert Shop blacklist [user/guild] [add/remove] [id]**"
+					set the colour of the embed to color from rgb 244, 66 and 101
+					#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+					set the timestamp of embed to now
+				send the last created embed to event-channel with event-bot
+				stop
+				
+		if {subcommand} is "settings":
+			if event-member has permission manage server:
+				if {_args::3} is "channel":
+					if {_args::4} is set:
+						if {_args::4} is "none":
+							clear {settings.%id of event-guild%.channel}
+							reply with "Command channel disabled, commands can be used anywhere."
+							stop
+							
+						if length of {_args::4} is less than 15:
+							reply with "Invalid channel id"
+							stop
+							
+						set {settings.%id of event-guild%.channel} to {_args::4}
+						reply with "Command channel has been successfully set to %{_args::4}%"
+					else:
+						#invalid syntax embed
+				if {_args::3} is "prefix":
+					if {_args::4} is set:
+						set {settings.%event-guild%.prefix} to "%{_args::4}%"
+						reply with "Succesfully changed your prefix of guild `%event-guild%` to `%{_args::4}%`"
+				if {_args::3} is "currency":
+					if {_args::4} is "true" or "enable":
+						reply with ":white_check_mark: You have enabled currency in `%event-guild%`"
+						set {settings.%event-guild%.currency} to true
+						set {settings.%event-guild%.price} to 20
+						stop
+					else:
+						reply with ":negative_squared_cross_mark: You have disabled currency in `%event-guild%`"
+						set {settings.%event-guild%.currency} to false
+						set {settings.%event-guild%.price} to 20
+						stop
+				if {_args::3} is "price":
+					if event-member has role with id "480120868178231307":
+						if {_args::4} is set:
+							set {settings.%event-guild%.price} to {_args::4} parsed as an integer
+							reply with "You have set the cost to order to `%{_args::4}%` :dollar: in `%event-guild%`"
+					else:
+						create embed:
+							set the title of embed to title with text "Error with command!"
+							set the description of embed to "Only premium users may set a price.%nl%For more information on purchasing premium%nl%Use the command **@Dessert Shop premium**"
+							set the colour of the embed to Aqua
+							#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+							set the timestamp of embed to now
+						send the last created embed to event-channel with event-bot
+						stop
+						
+			else:
+				create embed:
+					set the title of embed to title with text "Error with command!"
+					set the description of embed to "You are missing the following permission:%nl%**MANAGE_SERVER** or **ADMINISTRATOR**"
+					set the colour of the embed to color from rgb 244, 66 and 101
+					#set the footer of embed to footer with text "Replying to %event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+					set the timestamp of embed to now
+				send the last created embed to event-channel with event-bot
+				stop
+				
+		
+		if {subcommand} is "note":
+			if {_args::3} is not set:
+				reply with "[Kitchen] [%{chef.%id of event-user%.currentorder}%] Invalid syntax, use `@Dessert Shop note [message]`"
+
+			if {chef.%id of event-user%.currentorder} is set:
+				set {note::*} to event-string split at "<@478729456454729728> note "
+				set {orderinfo.note.%{chef.%id of event-user%.currentorder}%} to {note::2}
+				reply with "[Kitchen] [%{chef.%id of event-user%.currentorder}%] Note set to '%{note::2}%'"
+				stop
+			
+		if {subcommand} is "admin":
+			if id of event-user is "136936755642236929" or "213849560508792832":
+				if {_args::3} is "status":
+					if {_args::4} is "set":
+						set {orderinfo.status.%{_args::5}%} to "%{_args::8}%"
+						reply with "Variable content: %{orderinfo.status.%{_args::5}%}%"
+						stop
+						
+				if {_args::3} is "var":
+					if {_args::4} is "clear":
+						clear "%{_args::5}%"
+						reply with "Cleared `%{_args::5}%`"
+					
+				if {_args::3} is "image":
+					if {_args::4} is "clear":
+						clear {
+					
+				if {_args::3} is "eco":
+					if {_args::4} is "set":
+						set {balance::%event-guild%::%{_args::5}%} to {_args::6}
+						reply with "Set <@%{_args::5}%>'s balance to %{_args::6}%"
+				
+				if {_args::3} is "lookup":
+					reply with "**Message info:** %nl%%nl%%{messages::%{_args::4}%::1}%%nl%%{messages::%{_args::4}%::2}%%nl%%{messages::%{_args::4}%::3}%"
+				
+				if {_args::3} is "settings":
+					if {_args::4} is "channel":
+						reply with "Set command channel to %{_args::6}% in %name of guild with id {_args::5}%"
+						if {_args::6} is "none":
+							clear {settings.%{_args::5}%.channel}
+							reply with "Cleared channel"
+							stop
+						else:
+							set {settings.%{_args::5}%.channel} to "%{_args::6}%"
+							stop
+						
+				if {_args::3} is "reload":
+					reply with "Reloading..."
+					execute console command "/sk reload dessert"
+					reply with "Reloaded"
+					
+				if {_args::3} is "chef":
+					if {_args::4} is "clear":
+						clear {chef.%{_args::5}%.currentorder}
+						reply with "Cleared <@%{_args::5}%>'s current order"
+					if {_args::4} is "order":
+						set {chef.%{_args::5}%.currentorder} to {_args::6}
+						reply with "set chef's order to %{_args::6}%"
+						
+					if {_args::4} is "approve":
+						send ":wave: **Thanks for applying to become a chef!**%nl%We're pleased to tell you, your application to become a chef has been accepted by **%event-user%**!%nl%Please join https://discord.gg/39fXGt9 to begin training!" to user with id "%{_args::5}%" with event-bot
+						reply with "Accepted application of %name of user with id {_args::5}%."
+						
+					if {_args::4} is "reject":
+						send ":wave: **Thanks for applying to become a chef!**%nl%Unfortunately we've decided to deny your application for chef!" to user with id "%{_args::5}%" with event-bot
+						reply with "Denied application of %name of user with id {_args::5}%."
+					
+					if {_args::4} is "check":
+						reply with "%{chef.%{_args::5}%.currentorder}%"
+				if {_args::3} is "chefpurge":
+					clear {week}
+					reply with "The purge will begin shortly!"
+					
+				if {_args::3} is "purge":
+					
+					clear {pendinglist::*}
+					reply with "Purged order list"
+					stop
+				if {_args::3} is "resettime":
+					if {_args::4} is set:
+						clear {time.%{_args::4}%}
+						reply with "cleared your time"
+			
+
+
+	
+bot join new guild seen by "Dessert":
+	loop guilds of "Dessert":
+		add 1 to {guildcounter}
+	set {guildcounter} to {guildcounter} + 132
+	add "%id of event-guild%" to {guildlist::*}
+	set {newguild.%id of event-guild%} to true
+	set {tempvar} to "%id of event-guild%"
+	send ":envelope_with_arrow: joined **%name of event-guild%** (%id of event-guild%) owned by <@%id of owner of event-guild%> (now in **%{guildcounter}%** guilds)" to channel with id "478796595375243277" with event-bot
+	set {role.%owner of event-guild%} to "owner"
+	add role with id "479350036359020544" to roles of owner of event-guild in event-guild with event-bot
+	set {loop::*} to channels of event-guild
+	clear {guildcounter}
+	loop {loop::*}:
+		if "%loop-value%" contains "command" or "cmd" or "bot":
+			set {loopp} to "%id of loop-value%"
+			send ":wave: **Hello, I'm <@478729456454729728> and I'm here to serve desserts to you!**%nl%%nl%I allow users in `%event-guild%` to order custom desserts directly to the channel you order them in!%nl%To order your first dessert, use `@Dessert Shop order [order information]` and one of our fabulous chefs will craft it for you!%nl%%nl%**Need any more help?** Use **<@478729456454729728> help** for more commands!" to channel with id {loopp} with event-bot
+			stop
+				
+
