@@ -1,1 +1,120 @@
 
+on guild message receive seen by "Dessert":
+	if id of event-channel is "478782040481726466":
+		if {denialmode.%id of event-user%} is set:
+			set {orderiddd} to {denialmode.%id of event-user%}
+			set {orderinfo.status.%{orderiddd}%} to "Rejected"
+			set {orderinfo.denialreason.%{orderiddd}%} to "%event-string%"
+			add 1 to {warnings.%{orderinfo.author.%{denialmode.%id of event-user%}%}%}
+			send "<@%id of event-user%> has rejected order **##%{orderiddd}%** (created by %{orderinfo.author.%{denialmode.%id of event-user%}%}%) for `%event-string% [%{warnings.%{orderinfo.author.%{denialmode.%id of event-user%}%}%}%/3]`" to channel with id "478798595743678484" with event-bot
+			reply with "Thanks for the information!"
+			send ":warning: Your order has been rejected by %event-user%##%discriminator of event-user% %nl%%nl%```Rejected for: %event-string% [%{warnings.%{orderinfo.author.%{denialmode.%id of event-user%}%}%}%/3]```%nl%If you believe this is incorrect, you can contact us at https://discord.gg/ueSmqgQ" to user with id "%{orderinfo.author.%{denialmode.%id of event-user%}%}%" with event-bot
+			set {autodeny::%{orderinfo.order.%{orderiddd}%}%} to "%event-string%"
+			clear {denialmode.%id of event-user%}
+			
+on reaction add seen by "Dessert":
+	if id of event-channel is "478781796415307776":
+		bot state of event-user is true:
+			stop
+		
+		if {deletemsg.%event-message%} is set:
+			delete event-message with event-bot
+			stop
+
+		else:
+			set {lol} to name of event-emote
+			if {lol} is "white_check_mark":
+				if {orderinfo.status.%{orderid.%event-message%}%} is "Canceled":
+					delete event-message with "Dessert"
+					send "This order has been canceled by the orderer!" to event-user with event-bot
+					stop
+				if {chef.%id of event-user%.currentorder} is set:
+					send ":warning: You can only take 1 order at a time!%nl%%nl%You currently have order `##%{chef.%id of event-user%.currentorder}%` (%{orderinfo.order.%{chef.%id of event-user%.currentorder}%}%)" to event-user with event-bot
+					stop
+				else:
+					
+					remove "%event-message%" from {pendinglist::*}
+					add 1 to {ordernumber}
+					set {hubguild} to "478780582642450448"
+					delete event-message with "Dessert"
+					set {moveid} to {orderid.%event-message%}
+					set {tempvar} to "%id of event-user%"
+					send "<@%{orderinfo.author.%{orderid.%event-message%}%}%> your order is being prepared by Chef **%event-user%##%discriminator of event-user%**" to channel with id "%{orderinfo.channel.%{orderid.%event-message%}%}%" with event-bot
+					
+					
+					send "[Kitchen] [%{moveid}%] <@%id of event-user%> has claimed order **%{moveid}%**" to channel with id "478781835246305281" with event-bot
+					send "[Kitchen] [%{moveid}%] In order to submit your image use `@Dessert Shop img [image link]`" to channel with id "478781835246305281" with event-bot
+					set {orderinfo.starttime.%{moveid}%} to now
+					set {orderinfo.status.%{moveid}%} to "Cooking"
+					set {orderinfo.chef.%{moveid}%} to "%id of event-user%"
+					set {chef.%id of event-user%.currentorder} to {moveid}
+					set {ordernumber.%{ordernumber}%.id} to "%{moveid}%"
+					wait 10 minutes
+					if {chef.%id of event-user%.currentorder} is not set:
+						stop
+					if "%{chef.%id of event-user%.currentorder}%" is "%{orderid.%event-message%}%":
+						send "[Kitchen] [%{orderid.%event-message%}%] <@%id of event-user%> you have 5 minutes to complete the order!" to channel with id "478781835246305281" with event-bot
+
+					wait 5 minutes
+					if {chef.%id of event-user%.currentorder} is not set:
+						stop
+					if "%{chef.%id of event-user%.currentorder}%" is "%{orderid.%event-message%}%":
+						send "[Kitchen] [%{orderid.%event-message%}%] <@%id of event-user%> the order has expired and been returned to the kitchen" to channel with id "478781835246305281" with event-bot
+						
+						create embed:
+							set the title of embed to title with text "New order created"
+							set the description of embed to "%{orderinfo.order.%{orderid.%event-message%}%}%"
+							set the colour of the embed to color from rgb 244, 66 and 101
+							
+							set the timestamp of embed to now
+						send the last created embed to channel with id "478781796415307776" with event-bot
+						stop
+						
+
+						set {newesetorder} to {chef.%id of event-user%.currentorder}
+						set {orderid} to {chef.%id of event-user%.currentorder}
+						
+						
+						set {orderinfo.status.%{orderid.%event-message%}%} to "Awaiting"
+						send "Your order is now back in the kitchen (the chef went afk)!" to user with id {orderinfo.author.%{orderid.%event-message%}%} with event-bot
+						clear {chef.%id of event-user%.currentorder}
+					else:
+						stop
+			if {lol} is "negative_squared_cross_mark":
+				if event-member has role with id "483284725172273159":
+					set {moveid} to {orderid.%event-message%}
+					
+					delete event-message with "Dessert"
+					add 1 to {chef.%id of event-user%.counter}
+					add 1 to {chef.%id of event-user%.rejected}
+					remove "%event-message%" from {pendinglist::*}
+					send "[Office] [%{moveid}%] <@%id of event-user%> has rejected order **%{moveid}%**" to channel with id "478782040481726466" with event-bot
+					send "[Office] [%{moveid}%] Please give your reason for denial below!" to channel with id "478782040481726466" with event-bot
+					set {denialmode.%id of event-user%} to "%{moveid}%"
+				else:
+					send "You must be a **Food Quality Inspector** to do this!" to event-user with event-bot
+
+on reaction add seen by "Dessert":
+	if id of event-channel is "478782145888780289":
+		bot state of event-user is true:
+			stop
+		
+		if {deletemsg.%event-message%} is set:
+			delete event-message with event-bot
+			stop
+			
+		set {lol} to name of event-emote
+		if {lol} is "white_check_mark":
+			if event-member has role with id "483419629621084170":
+				set {rnd} to a random integer between 1 and 3
+				if {rnd} is 1:
+					send "**Delivery information**:%nl%%nl%Link: %{deliverysystem.link.%event-message%}% %nl%%nl%**Copy and paste format**%nl%```Thanks for ordering from us <@%{deliverysystem.orderer.%event-message%}%>!%nl%Here's your order: %{deliverysystem.image.%event-message%}%%nl%%nl%if you like what you see, leave us a tip using <@478729456454729728> tip [amount]!```" to event-user with event-bot
+				if {rnd} is 2:
+					send "**Delivery information**:%nl%%nl%Link: %{deliverysystem.link.%event-message%}% %nl%%nl%**Copy and paste format**%nl%```Thanks for ordering from us <@%{deliverysystem.orderer.%event-message%}%>!%nl%Here's your order: %{deliverysystem.image.%event-message%}%%nl%%nl%if you like what you see, leave us a tip using <@478729456454729728> tip [amount]!```" to event-user with event-bot
+				if {rnd} is 3:
+					send "**Delivery information**:%nl%%nl%Link: %{deliverysystem.link.%event-message%}% %nl%%nl%**Copy and paste format**%nl%```Thanks for ordering from us <@%{deliverysystem.orderer.%event-message%}%>!%nl%Here's your order: %{deliverysystem.image.%event-message%}%%nl%%nl%if you like what you see, leave us a tip using <@478729456454729728> tip [amount]!```" to event-user with event-bot
+				delete event-message with event-bot
+				stop
+			else:
+				send "You must be a **Delivery man** for this!" to event-user with event-bot
+				stop
