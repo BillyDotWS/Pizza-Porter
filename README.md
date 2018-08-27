@@ -2,8 +2,12 @@
 
 # Dessert Shop Bot
 
+
+
 ### Bot lists:
 ![discordbots.org](https://discordbots.org/api/widget/478729456454729728.png) ![botsfordiscord](https://botsfordiscord.com/api/v1/bots/478729456454729728/embed?width=300)
+
+
 
 ### Powered using:
 Reqn - Click to view recource link
@@ -11,13 +15,16 @@ skript-mirror - Click to view recource link
 skript - Click to view recource link
 skript-json - Click to view recource link
 
+
+
 ## Page links:
 Chef Guides: <link>
 Server owner guides: <link>
 Known issues: <link>
 
-## Commands:
 
+
+## Commands:
 ### @Dessert Shop order (order information)
 
 ```
