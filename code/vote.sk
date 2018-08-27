@@ -1,0 +1,18 @@
+every 20 seconds:
+	send a request to "https://discordbots.org/api/bots/478729456454729728/votes" with headers "User-Agent: Dessert", "Content-Type: application/json" and "Authorization: "
+	set {_resp} to the last http response
+	set {_body} to {_resp}'s body
+	set {split::*} to {_body} split at """id"":"""
+	set {split2::*} to {split::2} split at ""","
+	if {vote.%{split2::1}%} is not set:
+		set {vote.%{split2::1}%} to now
+		send "**%name of user with id {split2::1}%##%discriminator of user with id {split2::1}%** (%{split2::1}%) voted for us at https://discordbots.org/bot/478729456454729728/vote and earned :dollar: **20**" to channel with id "482556588054413324" with "Dessert"
+		send ":pray: Thank you for voting for this bot! It's greatly appreciated!%nl%%nl%**In order to claim your voting rewards** Please use `@Dessert Shop daily`" to user with id "%{split2::1}%" with "Dessert"
+		add 20 to {pendingamount.%{split2::1}%} 
+	if difference between now and {vote.%{split2::1}%} is more than 24 hours:
+		set {vote.%{split2::1}%} to now
+		send "**%name of user with id {split2::1}%##%discriminator of user with id {split2::1}%** (%{split2::1}%) voted for us at https://discordbots.org/bot/478729456454729728/vote and earned :dollar: **20**" to channel with id "482556588054413324" with "Dessert"
+		send ":pray: Thank you for voting for this bot! It's greatly appreciated!%nl%%nl%**In order to claim your voting rewards** Please use `@Dessert Shop daily`" to user with id "%{split2::1}%" with "Dessert"
+		add 20 to {pendingamount.%{split2::1}%} 
+	else:
+		stop
