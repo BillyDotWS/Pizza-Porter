@@ -9,7 +9,7 @@ expression bot information:
 
 			set the colour of the embed to color from rgb 244, 66 and 101
 					
-			set the description of embed to "**Bot information:**%nl%:monkey: Created by CookieBilly##9948%nl%:regional_indicator_v: Current version: v1.06%nl%:robot: Made using discord.js%nl% %nl%**Currently serving:** %nl%:briefcase: %{_guilds}% total servers%nl%:woman:  %size of {_users::*}% total users%nl%:speech_left:  %size of {_channels::*}% total channels%nl%%nl% **Order rules:**%nl%:underage:  No NSFW orders%nl%:five:  No more than 5 items%nl%:rage:  Nothing offensive%nl%:cake:  Desserts only!%nl%:no_pedestrians:  No human/animal body parts.%nl%%nl%**Important links:**%nl%:speech_left:  Support server: https://discord.gg/39fXGt9 %nl%:envelope_with_arrow:  Invite link: https://bit.ly/2oc99Ib %nl%:cooking:  Apply for chef: https://bit.ly/2PjmD1j %nl%:arrow_up: Vote for the bot: https://bit.ly/2LqgaOP"
+			set the description of embed to "**Bot information:**%nl%:monkey: Created by CookieBilly##9948%nl%:regional_indicator_v: Current version: v1.06%nl%:robot: Made using skript-mirror%nl% %nl%**Currently serving:** %nl%:briefcase: %{_guilds}% total servers%nl%:woman:  %size of {_users::*}% total users%nl%:speech_left:  %size of {_channels::*}% total channels%nl%%nl% **Order rules:**%nl%:underage:  No NSFW orders%nl%:five:  No more than 5 items%nl%:rage:  Nothing offensive%nl%:cake:  Desserts only!%nl%:no_pedestrians:  No human/animal body parts.%nl%%nl%**Important links:**%nl%:speech_left:  Support server: https://discord.gg/39fXGt9 %nl%:envelope_with_arrow:  Invite link: https://bit.ly/2oc99Ib %nl%:cooking:  Apply for chef: https://bit.ly/2PjmD1j %nl%:arrow_up: Vote for the bot: https://bit.ly/2LqgaOP"
 
 			clear {_users::*} 
 			clear {_channels::*}
