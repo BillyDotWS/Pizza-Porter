@@ -2,7 +2,7 @@
 
 # Dessert Shop Bot
 
-![discordbots.org](https://discordbots.org/api/widget/478729456454729728.png)
+![discordbots.org](https://discordbots.org/api/widget/478729456454729728.png) ![botsfordiscord](https://botsfordiscord.com/api/v1/bots/478729456454729728/embed?width=300)
 
 ## Page links:
 Chef Guides: <link>
