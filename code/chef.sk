@@ -1,4 +1,3 @@
-
 on guild message receive seen by "Dessert":
 	if id of event-channel is "478782040481726466":
 		if {denialmode.%id of event-user%} is set:
@@ -106,13 +105,7 @@ on reaction add seen by "Dessert":
 		set {lol} to name of event-emote
 		if {lol} is "white_check_mark":
 			if event-member has role with id "483419629621084170":
-				set {rnd} to a random integer between 1 and 3
-				if {rnd} is 1:
-					send "**Delivery information**:%nl%%nl%Link: %{deliverysystem.link.%event-message%}% %nl%%nl%**Copy and paste format**%nl%```Thanks for ordering from us <@%{deliverysystem.orderer.%event-message%}%>!%nl%Here's your order: %{deliverysystem.image.%event-message%}%%nl%%nl%if you like what you see, leave us a tip using <@478729456454729728> tip [amount]!```" to event-user with event-bot
-				if {rnd} is 2:
-					send "**Delivery information**:%nl%%nl%Link: %{deliverysystem.link.%event-message%}% %nl%%nl%**Copy and paste format**%nl%```Thanks for ordering from us <@%{deliverysystem.orderer.%event-message%}%>!%nl%Here's your order: %{deliverysystem.image.%event-message%}%%nl%%nl%if you like what you see, leave us a tip using <@478729456454729728> tip [amount]!```" to event-user with event-bot
-				if {rnd} is 3:
-					send "**Delivery information**:%nl%%nl%Link: %{deliverysystem.link.%event-message%}% %nl%%nl%**Copy and paste format**%nl%```Thanks for ordering from us <@%{deliverysystem.orderer.%event-message%}%>!%nl%Here's your order: %{deliverysystem.image.%event-message%}%%nl%%nl%if you like what you see, leave us a tip using <@478729456454729728> tip [amount]!```" to event-user with event-bot
+				send "**Delivery information**:%nl%%nl%Link: %{deliverysystem.link.%event-message%}% %nl%%nl%**Copy and paste format**%nl%```:cake: **Hey <@%{deliverysystem.orderer.%event-message%}%>! Thanks for ordering from Dessert Shop!%nl%%nl%Here's your %{deliverysystem.order.%event-message%}%: %{deliverysystem.image.%event-message%}%%nl%%nl%if you like what you see, leave us a tip using <@478729456454729728> tip [amount]!```" to event-user with event-bot
 				delete event-message with event-bot
 				stop
 			else:
