@@ -1,1 +1,9 @@
+every 5 minutes:
 
+	set {_guilds} to size of guilds of "Dessert"
+	set {_dbl::server_count} to "%{_guilds}%"
+	send a "POST" request to "https://botsfordiscord.com/api/v1/bots/478729456454729728" with body json form of {_dbl::*} and headers "User-Agent: Dessert", "Content-Type: application/json" and "Authorization: "
+	send a "POST" request to "https://discordbots.org/api/bots/478729456454729728/stats" with body json form of {_dbl::*} and headers "User-Agent: Dessert", "Content-Type: application/json" and "Authorization: "
+	mark "Dessert" as watching with title "Over %{letstestthis}% guilds!"
+	clear {_users::*} 
+	clear {_channels::*}
