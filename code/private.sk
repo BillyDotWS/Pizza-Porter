@@ -1,0 +1,29 @@
+on guild message receive seen by "Dessert":
+	if id of event-channel is "478811154303680512":
+		create embed:
+			add 0.01 to {version}
+			set the title of embed to title with text "Bot Updates - Version %{version}%"
+			set the description of embed to "%event-string%"
+			set the colour of the embed to color from rgb 244, 66 and 101
+			set the footer of embed to footer with text "Update by %event-user%##%discriminator of event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+		send "@here" to channel with id "478780884363902976" with event-bot
+		send the last created embed to channel with id "478780884363902976" with event-bot
+		stop
+		
+on guild message receive seen by "Dessert":
+	if id of event-channel is "478781644531171328":
+		delete event-message with event-bot
+		create embed:
+			
+			set the title of embed to title with text "New suggestion"
+			set the description of embed to "%nl% %nl%%event-string%%nl% %nl% "
+			set the footer of embed to footer with text " "
+			set the colour of the embed to Aqua
+	
+
+		send the last created embed to channel with id "478781644531171328" with event-bot and store it in {sug}
+		add emote ":negative_squared_cross_mark:" to {sug} with "Dessert"
+		add emote ":white_check_mark:" to {sug} with "Dessert"
+		
+
+		
