@@ -8,14 +8,8 @@
 ![discordbots.org](https://discordbots.org/api/widget/478729456454729728.png) ![botsfordiscord](https://botsfordiscord.com/api/v1/bots/478729456454729728/embed?width=300)
 
 
-## Page links:
-Chef Guides: <link>
-Server owner guides: <link>
-Known issues: <link>
+### Commands:
 
-
-
-## Commands:
 ### @Dessert Shop order (order information)
 
 ```
