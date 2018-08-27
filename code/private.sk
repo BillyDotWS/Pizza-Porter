@@ -10,6 +10,67 @@ on guild message receive seen by "Dessert":
 		send the last created embed to channel with id "478780884363902976" with event-bot
 		stop
 		
+		
+on guild message receive seen by "Dessert":
+	if id of event-channel is "483713688709234728":
+		create embed:
+			add 0.01 to {version}
+			set the title of embed to title with text "Lesson - Chef Basics"
+			set the description of embed to "Date: 27/08/2018%nl%Time: 6pm est%nl%Requirements: none"
+			set the colour of the embed to color from rgb 244, 66 and 101
+
+		send the last created embed to channel with id "483713688709234728" with event-bot
+		create embed:
+			add 0.01 to {version}
+			set the title of embed to title with text "Lesson - Delivery Man"
+			set the description of embed to "Date: 28/08/2018%nl%Time: 1pm est%nl%Requirements: 20 weekly orders"
+			set the colour of the embed to color from rgb 244, 66 and 101
+
+		send the last created embed to channel with id "483713688709234728" with event-bot
+		create embed:
+			add 0.01 to {version}
+			set the title of embed to title with text "Lesson - Safety inspector"
+			set the description of embed to "Date: 28/08/2018%nl%Time: 6pm est%nl%Requirements: 20 weekly orders"
+			set the colour of the embed to color from rgb 244, 66 and 101
+
+		send the last created embed to channel with id "483713688709234728" with event-bot
+		
+on reaction add seen by "Dessert":
+	if id of event-channel is "480406092472385537":
+		bot state of event-user is true:
+			stop
+		delete event-message with event-bot
+		reply with "ad!rnd"
+		
+on guild message receive seen by "Dessert":
+	if id of event-channel is "478781665410416641":
+		if event-string contains "Guild id:" and "Message id:" and "User id:" and "Order id:":
+			delete event-message with event-bot
+			create embed:
+				
+				set the title of embed to title with text "Bug report"
+				set the description of embed to "%event-string%"
+				set the colour of the embed to Red
+		
+
+			send the last created embed to event-channel with "Dessert"
+			stop
+		else:
+			delete event-message with event-bot
+			send "Please use the correct format (it's pinned)" to event-user with event-bot
+			
+on guild message receive seen by "Dessert":
+	if id of event-channel is "478811154303680512":
+		create embed:
+			add 0.01 to {version}
+			set the title of embed to title with text "Bot Updates - Version %{version}%"
+			set the description of embed to "%event-string%"
+			set the colour of the embed to color from rgb 244, 66 and 101
+			set the footer of embed to footer with text "Update by %event-user%##%discriminator of event-user%" and icon "https://media.discordapp.net/attachments/478782040481726466/480586004835598338/7275aebc435153f103fe46c706a7f332-pastry.png"
+		send "@here" to channel with id "478780884363902976" with event-bot
+		send the last created embed to channel with id "478780884363902976" with event-bot
+		stop
+		
 on guild message receive seen by "Dessert":
 	if id of event-channel is "478781644531171328":
 		delete event-message with event-bot
