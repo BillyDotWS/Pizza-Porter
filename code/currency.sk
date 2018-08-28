@@ -1,1 +1,30 @@
 
+on script load:
+	set {sql} to the database ""
+
+on guild message receive seen by "Dessert":	
+	chance of 10%:
+
+		if {balance::%id of event-guild%::%id of event-user%} is not set:
+			set {balance::%id of event-guild%::%id of event-user%} to 20
+		set {guild} to unsafe id of event-guild
+		if {db.%id of event-user%} is not set:
+			execute "INSERT INTO data (`guild`, `userid`, `balance`) VALUES (%unsafe id of event-guild%, %unsafe id of event-user%, %{balance::%id of event-guild%::%id of event-user%}%)" in {sql}
+			set {db.%id of event-user%} to true
+		else:
+			execute "UPDATE data SET guild=%unsafe id of event-guild%, userid=%unsafe id of event-user%, balance=%{balance::%id of event-guild%::%id of event-user%}% WHERE userid=%unsafe id of event-user%" in {sql}
+		broadcast "%last sql error%"
+		if bot state of event-user is false:
+			if {balance::%event-guild%::%id of event-user%} is not set:
+				set {balance::%event-guild%::%id of event-user%} to 20
+				send "**%event-user%##%discriminator of event-user%** (%id of event-user%) earned 20 :dollar: for `default money`, (in channel ##%event-channel% - %id of event-channel%) and now has :dollar: **%{balance::%event-guild%::%id of event-user%}%**" to channel with id "480456593121476619" with "Dessert"
+			if "%name of event-channel%" do not contain "spam" or "spamming" or "counting" or "advertisements" or "commands" or "a":
+				add 1 to {balance::%event-guild%::%id of event-user%}
+				send "**%event-user%##%discriminator of event-user%** (%id of event-user%) earned 1 :dollar: for `talking`, (in channel ##%event-channel% - %id of event-channel%) and now has :dollar: **%{balance::%event-guild%::%id of event-user%}%**" to channel with id "480456593121476619" with "Dessert"
+				stop
+			if {balance::%event-guild%::%id of event-user%} is less than 0:
+				set {balance::%event-guild%::%id of event-user%} to 0
+			
+expression balance of %string% in guild %string%:
+	get:
+		return {balance::%expression-2%::%expression-1%}
