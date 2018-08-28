@@ -105,9 +105,19 @@ on reaction add seen by "Dessert":
 		set {lol} to name of event-emote
 		if {lol} is "white_check_mark":
 			if event-member has role with id "483419629621084170":
-				send "**Delivery information**:%nl%%nl%Link: %{deliverysystem.link.%event-message%}% %nl%%nl%**Copy and paste format**%nl%```:cake: **Hey <@%{deliverysystem.orderer.%event-message%}%>! Thanks for ordering from Dessert Shop!%nl%%nl%Here's your %{deliverysystem.order.%event-message%}%: %{deliverysystem.image.%event-message%}%%nl%%nl%if you like what you see, leave us a tip using <@478729456454729728> tip [amount]!```" to event-user with event-bot
+				send "**Delivery information**:%nl%%nl%:link: Link: %{deliverysystem.link.%event-message%}%%nl%:speech_left: Channel: ##%name of {orderinfo.channel.%{deliverysystem.orderid.%event-message%}%}%%nl%:clipboard: Copy and paste format:%nl%```:cake: **Hey <@%{deliverysystem.orderer.%event-message%}%>!** Thanks for ordering from Dessert Shop!%nl%%nl%Here's your %{deliverysystem.order.%event-message%}%: %{deliverysystem.image.%event-message%}%%nl%%nl%if you like what you see, leave us a tip using <@478729456454729728> tip [amount]!```" to event-user with event-bot
 				delete event-message with event-bot
+				set {deliverysystem.man.%event-user%} to {deliverysystem.orderid.%event-message%}
 				stop
 			else:
 				send "You must be a **Delivery man** for this!" to event-user with event-bot
 				stop
+
+on guild message receive seen by "Dessert":
+	if event-string contains "Thanks for ordering from Dessert Shop!":
+		send ":white_check_mark: Thanks for delivering this order" to event-user with event-bot
+		set {orderinfo.ststus.%{deliverysystem.man.%event-user%}%} to "Delivered"
+		send "<@%id of event-user%> has delivered order **##%{deliverysystem.man.%event-user%}%** (Created by %{orderinfo.author.%{deliverysystem.man.%event-user%}%}%) (In guild %event-guild% - %id of event-guild%)" to channel with id "478798595743678484" with event-bot
+		send "%event-user% has delivered your order, check **##%event-channel%**! Thanks for ordering with us!" to user with id "%{orderinfo.author.%{deliverysystem.man.%event-user%}%}%" with event-bot
+		add 1 to {deliveries.%event-user%}
+		clear {deliverysystem.man.%event-user%}
